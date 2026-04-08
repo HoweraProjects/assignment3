@@ -2,6 +2,18 @@
 
 Python implementation for Tasks **A–E**: LangChain ReAct prompt, LangGraph router, relevance grader, query rewriter, and cited generator. **Default LLM is Ollama** (`LLM_PROVIDER=ollama`).
 
+## Project layout
+
+| File | Role |
+|------|------|
+| `config.py` | Paths, `get_llm`, `get_embeddings`, `FILES` |
+| `retrieval.py` | Chroma + MMR retrievers, query boosts, anchor hooks, rerank, `assemble_retrieval_context` |
+| `langgraph_agent.py` | LangGraph (router → retrieve → grade → rewrite → generate) and legacy ReAct agent |
+| `build_rag.py` | PDF ingestion and chunking into `chroma_db/` |
+| `bootstrap.py` | `.env`, download PDFs, `ollama pull`, run `build_rag.py` |
+| `evaluator.py` | Benchmark harness (`EVAL_MODE=GRAPH` or `LEGACY`) |
+| `make_report.py` | Writes `report.pdf` for the write-up |
+
 ## Prerequisites
 
 - Python 3.11+ recommended (3.12/3.13 usually fine).
@@ -35,6 +47,10 @@ python bootstrap.py
 This will: create `.env` from `.env.example` if missing, download both course PDFs into `data/`, run `ollama pull` for `OLLAMA_MODEL` when the `ollama` CLI exists, and run `build_rag.py`.
 
 Ollama’s daemon must be reachable at `OLLAMA_BASE_URL` (default `http://localhost:11434`) for `ollama pull` and for agents to run.
+
+### Troubleshooting
+
+- **`ModuleNotFoundError: No module named 'langchain_core'`** — You ran the system `python` / `python3`, not the venv. Either activate the environment (`source .venv/bin/activate` then `python evaluator.py …`) or call the interpreter explicitly, e.g. `.venv/bin/python evaluator.py …` (from `assignment3/`).
 
 ## Build vector stores (manual)
 
@@ -95,7 +111,7 @@ Logs are written to `evaluation_log_YYYYMMDD_HHMM.txt`.
 | Task | Location |
 |------|----------|
 | A — ReAct prompt | `REACT_TEMPLATE` + `run_legacy_agent` |
-| B — Router | `ROUTER_SYSTEM`, `retrieve_node` |
+| B — Router + retrieval | `ROUTER_SYSTEM`, `retrieve_node` in `langgraph_agent.py`; corpus retrieval in `retrieval.py` |
 | C — Grader | `GRADER_SYSTEM`, `grade_documents_node` |
 | D — Rewriter | `REWRITER_SYSTEM`, `rewrite_node` |
 | E — Generator | `GENERATOR_SYSTEM`, `generate_node` |
