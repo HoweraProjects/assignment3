@@ -100,10 +100,13 @@ Logs are written to `evaluation_log_YYYYMMDD_HHMM.txt`.
 | D — Rewriter | `REWRITER_SYSTEM`, `rewrite_node` |
 | E — Generator | `GENERATOR_SYSTEM`, `generate_node` |
 
-## Report reminders (not auto-generated)
+## Report (`report.pdf`)
 
-- Compare **at least two** embedding models (rebuild with different `EMBEDDING_MODEL` + `EMBEDDING_TAG`).
-- Contrast **LangGraph vs LangChain** (routing, grading, rewrite loop vs ReAct tool loop).
-- Discuss **chunk size** vs large tables: precision vs completeness.
+Generate a baseline PDF (you may edit `make_report.py` or replace the file after adding figures/tables):
 
-`report.pdf` is your write-up for submission.
+```bash
+pip install -r requirements.txt
+python make_report.py --out report.pdf
+```
+
+The script covers: **two embedding strategies** (how to compare via `EMBEDDING_MODEL` / `EMBEDDING_TAG`), **LangGraph vs ReAct**, and **chunk size** vs tables. Extend with your own eval numbers or screenshots before submitting.
